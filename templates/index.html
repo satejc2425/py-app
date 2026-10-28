@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Flask Web App</title>
+    <title>In-Memory Flask Task Manager</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
         h1 { color: #333; }
         ul { list-style: none; padding: 0; }
-        li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd; }
+        li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #ddd; }
+        .task-info { display: flex; align-items: center; gap: 10px; }
+        .completed { text-decoration: line-through; color: #888; }
         form { margin-top: 15px; display: flex; gap: 10px; }
         input[type="text"] { flex-grow: 1; padding: 8px; }
         button { padding: 8px 15px; cursor: pointer; }
-        .delete-btn { background-color: #ff4d4d; color: white; border: none; padding: 4px 8px; }
+        .delete-btn { background-color: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; }
+        .toggle-btn { background: none; border: none; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
-    <h1>Task Manager</h1>
+    <h1>In-Memory Task Manager</h1>
 
     <ul>
         {% for task in tasks %}
             <li>
-                <span>{{ task }}</span>
-                <form action="{{ url_for('delete_task', task_id=loop.index0) }}" method="POST" style="margin: 0;">
+                <div class="task-info">
+                    <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="POST" style="margin: 0;">
+                        <button type="submit" class="toggle-btn">
+                            {% if task.done %}✅{% else %}⬜{% endif %}
+                        </button>
+                    </form>
+                    <span class="{% if task.done %}completed{% endif %}">{{ task.text }}</span>
+                </div>
+                <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="margin: 0;">
                     <button type="submit" class="delete-btn">Delete</button>
                 </form>
             </li>
