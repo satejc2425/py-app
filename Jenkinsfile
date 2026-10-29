@@ -2,10 +2,11 @@ pipeline{
 	agent any 
 	
 	environment{
-		IMAGE_NAME = 'my-flask-app'
+		IMAGE_NAME = 'satejc2425/my-flask-app'
 		TAG = 'latest'
 		CONTAINER_NAME = 'my-flask-container'
 		PORT = '5000'
+		DOCKER_CREDS = credentials('my-docker-hub-credentials-id')
 	}
 
 	stages{
@@ -21,6 +22,15 @@ pipeline{
 					sh "docker build -t ${IMAGE_NAME}:${TAG} ."
 				}
 			}
+		}
+		
+		stage('Push to Docker Hub'){
+			steps{
+				script{
+					sh 'echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin'
+					sh "docker push ${IMAGE_NAME}:${TAG}"
+				}
+			}	
 		}
 		stage('Run Docker Container'){
 			steps{
